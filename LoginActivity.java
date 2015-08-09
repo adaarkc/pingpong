@@ -1,31 +1,91 @@
 package janel.pingpong;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
-    protected TextView mSignUpTextView;
+    protected EditText mUserName;
+    protected EditText mPassword;
+    protected Button mLoginButton;
+    protected TextView mSignUp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mSignUpTextView = (TextView)findViewById(R.id.signupText);
-        mSignUpTextView.setOnClickListener(new View.OnClickListener() {
+        mUserName = (EditText)findViewById(R.id.usernameField);
+        mPassword = (EditText)findViewById(R.id.passwordField);
+        mLoginButton = (Button)findViewById(R.id.loginButton);
+        mSignUp = (TextView)findViewById(R.id.signupText);
+
+        mSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
+
+        mLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = mUserName.getText().toString();
+                String password = mPassword.getText().toString();
+
+                username = username.trim(); //remove whitespace
+                password = password.trim();
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                    builder.setMessage(R.string.login_message_error)
+                            .setTitle(R.string.signup_error_title)
+                            .setPositiveButton(android.R.string.ok, null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    ParseUser.logInInBackground(username, password, new LogInCallback() {
+                        @Override
+                        public void done(ParseUser user, ParseException e) {
+                            if (e == null) {
+                                // success
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            } else {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                                builder.setMessage(e.getMessage())
+                                        .setTitle(R.string.signup_error_title)
+                                        .setPositiveButton(android.R.string.ok, null);
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
