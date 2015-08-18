@@ -16,8 +16,6 @@ package janel.pingpong;
  * limitations under the License.
  */
 
-//package com.google.samples.apps.iosched.ui.widget;
-
         import android.R;
         import android.content.Context;
         import android.graphics.Canvas;

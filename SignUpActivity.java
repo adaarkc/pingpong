@@ -2,11 +2,14 @@ package janel.pingpong;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -20,9 +23,12 @@ public class SignUpActivity extends AppCompatActivity {
     protected EditText mPassword;
     protected EditText mEmail;
     protected Button mSignUpButton;
+    Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);  //must be set before setContentView!!
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
@@ -30,6 +36,19 @@ public class SignUpActivity extends AppCompatActivity {
         mPassword = (EditText)findViewById(R.id.passwordField);
         mEmail = (EditText)findViewById(R.id.emailField);
         mSignUpButton = (Button)findViewById(R.id.signUpButton);
+        mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(mToolbar);
+
+        mToolbar.setNavigationIcon(ContextCompat.getDrawable(SignUpActivity.this, R.drawable.abc_ic_ab_back_mtrl_am_alpha));
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
 
         mSignUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +69,8 @@ public class SignUpActivity extends AppCompatActivity {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 } else {
+                    setProgressBarIndeterminateVisibility(true);
+
                     //create new user
                     ParseUser newUser = new ParseUser();
                     newUser.setUsername(username);
@@ -58,6 +79,8 @@ public class SignUpActivity extends AppCompatActivity {
                     newUser.signUpInBackground(new SignUpCallback() {
                         @Override
                         public void done(ParseException e) {
+                            setProgressBarIndeterminateVisibility(false);
+
                             if (e == null) {
                                 // success
                                 Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
