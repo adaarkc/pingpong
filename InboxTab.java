@@ -19,6 +19,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InboxTab extends android.support.v4.app.ListFragment {
@@ -62,8 +63,12 @@ public class InboxTab extends android.support.v4.app.ListFragment {
                 if (e == null) {
                     mMessages = messages;
 
-                    MessageAdapter adapter = new MessageAdapter(getListView().getContext(), mMessages);
-                    setListAdapter(adapter);
+                    if (getListView().getAdapter() == null) {
+                        MessageAdapter adapter = new MessageAdapter(getListView().getContext(), mMessages);
+                        setListAdapter(adapter);
+                    } else {
+                        ((MessageAdapter)getListView().getAdapter()).refill(mMessages);
+                    }
                 }
             }
         });
@@ -85,9 +90,22 @@ public class InboxTab extends android.support.v4.app.ListFragment {
             startActivity(intent);
         } else {
             //view video
-            Intent intent = new Intent(getActivity(), ViewImageActivity.class);
-            intent.setData(fileUri);
+            Intent intent = new Intent(Intent.ACTION_VIEW, fileUri);
+            intent.setDataAndType(fileUri, "video/*");
             startActivity(intent);
         }
+
+        List<String> ids = message.getList(ParseConstants.KEY_RECIPIENT_IDS);
+        if (ids.size() == 1) {
+            message.deleteInBackground();
+        } else {
+            ids.remove(ParseUser.getCurrentUser().getObjectId());
+        }
+
+        ArrayList<String> idsToRemove = new ArrayList<>();
+        idsToRemove.add(ParseUser.getCurrentUser().getObjectId());
+        message.removeAll(ParseConstants.KEY_RECIPIENT_IDS, idsToRemove);
+        message.saveInBackground();
     }
+
 }
