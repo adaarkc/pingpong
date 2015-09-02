@@ -3,7 +3,6 @@ package janel.pingpong;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,17 +30,7 @@ public class FriendsTab extends android.support.v4.app.ListFragment {
         return inflater.inflate(R.layout.friends,container,false);
     }
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static FriendsTab newInstance(int sectionNumber) {
-        FriendsTab fragment = new FriendsTab();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
-    }
+
 
     @Override
     public void onResume() {
@@ -66,7 +55,7 @@ public class FriendsTab extends android.support.v4.app.ListFragment {
                         i++;
                     }
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             getListView().getContext(),
                             android.R.layout.simple_list_item_1,
                             usernames);
