@@ -24,7 +24,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected EditText mPassword;
     protected EditText mEmail;
     protected Button mSignUpButton;
-    Toolbar mToolbar;
+    protected Button mCancelButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +37,12 @@ public class SignUpActivity extends AppCompatActivity {
         mPassword = (EditText)findViewById(R.id.passwordField);
         mEmail = (EditText)findViewById(R.id.emailField);
         mSignUpButton = (Button)findViewById(R.id.signUpButton);
-        mToolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(mToolbar);
+        mCancelButton = (Button)findViewById(R.id.cancelButton);
 
-        mToolbar.setNavigationIcon(ContextCompat.getDrawable(SignUpActivity.this, R.drawable.abc_ic_ab_back_mtrl_am_alpha));
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
@@ -101,20 +97,5 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
