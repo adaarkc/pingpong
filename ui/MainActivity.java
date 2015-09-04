@@ -1,4 +1,4 @@
-package janel.pingpong;
+package janel.pingpong.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -25,6 +25,11 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import janel.pingpong.utils.ParseConstants;
+import janel.pingpong.R;
+import janel.pingpong.adapters.SectionsPagerAdapter;
+import janel.pingpong.utils.SlidingTabLayout;
 
 public class MainActivity extends AppCompatActivity {
 

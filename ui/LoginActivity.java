@@ -1,10 +1,9 @@
-package janel.pingpong;
+package janel.pingpong.ui;
 
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -15,7 +14,8 @@ import android.widget.TextView;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
+
+import janel.pingpong.R;
 
 public class LoginActivity extends AppCompatActivity {
 

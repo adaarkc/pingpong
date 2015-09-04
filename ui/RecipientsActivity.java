@@ -1,11 +1,8 @@
-package janel.pingpong;
+package janel.pingpong.ui;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
-import android.support.annotation.StringRes;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -18,8 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -36,17 +33,22 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import janel.pingpong.adapters.UserAdapter;
+import janel.pingpong.utils.FileHelper;
+import janel.pingpong.utils.ParseConstants;
+import janel.pingpong.R;
+
 public class RecipientsActivity extends AppCompatActivity {
 
     private static final String TAG = RecipientsActivity.class.getSimpleName();
-    protected List<ParseUser> mFriends;
+    protected List<ParseUser> mUsers;
     protected ParseRelation<ParseUser> mFriendsRelation;
     protected ParseUser mCurrentUser;
     protected Toolbar mToolbar;
     protected ViewPager mViewPager;
     protected MenuItem mSendMenuItem;
-    protected ImageButton mImageButton;
-    private ListView mListView;
+    protected ImageView mImage;
+    private GridView mGridView;
     protected Uri mMediaUri;
     protected String mFileType;
 
@@ -58,13 +60,13 @@ public class RecipientsActivity extends AppCompatActivity {
 
         mToolbar = (Toolbar) findViewById(R.id.tool_bar);
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mImageButton = (ImageButton) findViewById(R.id.send_icon);
+        mImage = (ImageView) findViewById(R.id.send_icon);
         mMediaUri = getIntent().getData();
         mFileType = getIntent().getExtras().getString(ParseConstants.KEY_FILE_TYPE);
 
-        mListView = getListView();
+        mGridView = (GridView)findViewById(R.id.friendsGrid);
 
-        mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
 
         mToolbar.setNavigationIcon(ContextCompat.getDrawable(RecipientsActivity.this, R.drawable.abc_ic_ab_back_mtrl_am_alpha));
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -77,15 +79,15 @@ public class RecipientsActivity extends AppCompatActivity {
             }
         });
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> a, View v, int position,
                                     long id) {
 
-                if (mListView.getCheckedItemCount() > 0) {
-                    mImageButton.setVisibility(View.VISIBLE);
+                if (mGridView.getCheckedItemCount() > 0) {
+                    mImage.setVisibility(View.VISIBLE);
                 } else {
-                    mImageButton.setVisibility(View.INVISIBLE);
+                    mImage.setVisibility(View.INVISIBLE);
                 }
 
                 //Toast.makeText(RecipientsActivity.this, "Friends selected: " + mListView.getCheckedItemCount(), Toast.LENGTH_LONG).show();
@@ -104,7 +106,7 @@ public class RecipientsActivity extends AppCompatActivity {
             }
         });
 
-        mImageButton.setOnClickListener(new View.OnClickListener() {
+        mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ParseObject message = createMessage();
@@ -158,19 +160,14 @@ public class RecipientsActivity extends AppCompatActivity {
             public void done(List<ParseUser> friends, ParseException e) {
                 setProgressBarIndeterminateVisibility(false);
                 if (e == null) {
-                    mFriends = friends;
-                    String[] usernames = new String[mFriends.size()];
-                    int i = 0;
-                    for (ParseUser user : mFriends) {
-                        usernames[i] = user.getUsername();
-                        i++;
-                    }
+                    mUsers = friends;
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            getListView().getContext(),
-                            android.R.layout.simple_list_item_checked,
-                            usernames);
-                    setListAdapter(adapter);
+                    if (mGridView.getAdapter() == null) {
+                        UserAdapter adapter = new UserAdapter(RecipientsActivity.this, mUsers);
+                        mGridView.setAdapter(adapter);
+                    } else {
+                        ((UserAdapter)mGridView.getAdapter()).refill(mUsers);
+                    }
 
                 } else {
                     Log.e(TAG, e.getMessage());
@@ -184,18 +181,6 @@ public class RecipientsActivity extends AppCompatActivity {
             }
         });
     }
-
-    protected ListView getListView() {
-        if (mListView == null) {
-            mListView = (ListView) findViewById(android.R.id.list);
-        }
-        return mListView;
-    }
-
-    protected void setListAdapter(ListAdapter adapter) {
-        getListView().setAdapter(adapter);
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -261,9 +246,9 @@ public class RecipientsActivity extends AppCompatActivity {
 
     protected ArrayList<String> getRecipientIds() {
         ArrayList<String> recipientIds = new ArrayList<>();
-        for (int i = 0; i < getListView().getCount(); i++) {
-            if (getListView().isItemChecked(i)) {
-                recipientIds.add(mFriends.get(i).getObjectId());
+        for (int i = 0; i < mGridView.getCount(); i++) {
+            if (mGridView.isItemChecked(i)) {
+                recipientIds.add(mUsers.get(i).getObjectId());
             }
         }
         return recipientIds;

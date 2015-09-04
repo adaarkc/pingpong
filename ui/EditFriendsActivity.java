@@ -1,14 +1,12 @@
-package janel.pingpong;
+package janel.pingpong.ui;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -24,6 +22,9 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.List;
+
+import janel.pingpong.utils.ParseConstants;
+import janel.pingpong.R;
 
 public class EditFriendsActivity extends ListActivity {
 

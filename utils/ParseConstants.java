@@ -1,4 +1,4 @@
-package janel.pingpong;
+package janel.pingpong.utils;
 
 public final class ParseConstants {
 

@@ -1,4 +1,4 @@
-package janel.pingpong;
+package janel.pingpong.adapters;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -7,6 +7,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.Locale;
+
+import janel.pingpong.R;
+import janel.pingpong.ui.FriendsTab;
+import janel.pingpong.ui.InboxTab;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

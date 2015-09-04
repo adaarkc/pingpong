@@ -1,4 +1,4 @@
-package janel.pingpong;
+package janel.pingpong.utils;
 
 import java.io.ByteArrayOutputStream;
 

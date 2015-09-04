@@ -1,4 +1,4 @@
-package janel.pingpong;
+package janel.pingpong.utils;
 
 /*
  * Copyright 2014 Google Inc. All rights reserved.

@@ -1,7 +1,7 @@
-package janel.pingpong;
+package janel.pingpong.adapters;
 
 import android.content.Context;
-import android.util.Log;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +11,11 @@ import android.widget.TextView;
 
 import com.parse.ParseObject;
 
+import java.util.Date;
 import java.util.List;
+
+import janel.pingpong.utils.ParseConstants;
+import janel.pingpong.R;
 
 public class MessageAdapter extends ArrayAdapter<ParseObject> {
 
@@ -30,6 +34,13 @@ public class MessageAdapter extends ArrayAdapter<ParseObject> {
         ViewHolder holder;
         ParseObject message = mMessages.get(position);
         String messageText = message.getString(ParseConstants.KEY_SENDER_NAME);
+        Date createdAt = message.getCreatedAt();
+        long now = new Date().getTime();
+        String convertedDate = DateUtils.getRelativeTimeSpanString(
+                createdAt.getTime(),
+                now,
+                DateUtils.SECOND_IN_MILLIS)
+                .toString();
 
         if (convertView == null) {
 
@@ -38,6 +49,8 @@ public class MessageAdapter extends ArrayAdapter<ParseObject> {
             holder.iconImageView = (ImageView) convertView.findViewById(R.id.messageIcon);
             holder.nameLabel = (TextView) convertView.findViewById(R.id.senderLabel);
             holder.nameLabel.setText(messageText);
+            holder.timeLabel = (TextView) convertView.findViewById(R.id.timeLabel);
+            holder.timeLabel.setText(convertedDate);
             convertView.setTag(holder);
             return convertView;
         } else {
@@ -45,12 +58,11 @@ public class MessageAdapter extends ArrayAdapter<ParseObject> {
         }
 
         if (message.getString(ParseConstants.KEY_FILE_TYPE).equals(ParseConstants.TYPE_IMAGE)) {
-            holder.iconImageView.setImageResource(R.mipmap.ic_image_black_24dp);
+            holder.iconImageView.setImageResource(R.mipmap.ic_picture);
         } else {
-            holder.iconImageView.setImageResource(R.mipmap.ic_play_circle_outline_black_24dp);
+            holder.iconImageView.setImageResource(R.mipmap.ic_video);
         }
         holder.nameLabel.setText(messageText);
-        Log.d(TAG, "logging.....................................");
 
         return convertView;
     }
@@ -58,6 +70,7 @@ public class MessageAdapter extends ArrayAdapter<ParseObject> {
     private static class ViewHolder {
         ImageView iconImageView;
         TextView nameLabel;
+        TextView timeLabel;
     }
 
     public void refill(List<ParseObject> messages) {
