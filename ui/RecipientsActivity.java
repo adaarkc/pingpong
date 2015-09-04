@@ -19,6 +19,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -41,7 +42,7 @@ import janel.pingpong.R;
 public class RecipientsActivity extends AppCompatActivity {
 
     private static final String TAG = RecipientsActivity.class.getSimpleName();
-    protected List<ParseUser> mUsers;
+    protected List<ParseUser> mFriends;
     protected ParseRelation<ParseUser> mFriendsRelation;
     protected ParseUser mCurrentUser;
     protected Toolbar mToolbar;
@@ -58,13 +59,16 @@ public class RecipientsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipients);
 
+        mGridView = (GridView)findViewById(R.id.friendsGrid);
+
+        TextView emptyTextView = (TextView)findViewById(android.R.id.empty);
+        mGridView.setEmptyView(emptyTextView);
+
         mToolbar = (Toolbar) findViewById(R.id.tool_bar);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mImage = (ImageView) findViewById(R.id.send_icon);
         mMediaUri = getIntent().getData();
         mFileType = getIntent().getExtras().getString(ParseConstants.KEY_FILE_TYPE);
-
-        mGridView = (GridView)findViewById(R.id.friendsGrid);
 
         mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
 
@@ -90,19 +94,15 @@ public class RecipientsActivity extends AppCompatActivity {
                     mImage.setVisibility(View.INVISIBLE);
                 }
 
-                //Toast.makeText(RecipientsActivity.this, "Friends selected: " + mListView.getCheckedItemCount(), Toast.LENGTH_LONG).show();
+                ImageView checkImageView = (ImageView) v.findViewById(R.id.checkMark);
 
-/*                if (mSendMenuItem == null) {
-                    Toast.makeText(RecipientsActivity.this, "Menu item is null.", Toast.LENGTH_LONG).show();
+                if (mGridView.isItemChecked(position)) {
+                    //add recipient
+                    checkImageView.setVisibility(View.VISIBLE);
                 } else {
-                    Toast.makeText(RecipientsActivity.this, "It worked!!!!", Toast.LENGTH_LONG).show();
-
-                    if (mListView.getCheckedItemCount() > 0) {
-                        mSendMenuItem.setVisible(true);
-                    } else {
-                        mSendMenuItem.setVisible(false);
-                    }
-                }*/
+                    //remove recipient
+                    checkImageView.setVisibility(View.INVISIBLE);
+                }
             }
         });
 
@@ -160,13 +160,13 @@ public class RecipientsActivity extends AppCompatActivity {
             public void done(List<ParseUser> friends, ParseException e) {
                 setProgressBarIndeterminateVisibility(false);
                 if (e == null) {
-                    mUsers = friends;
+                    mFriends = friends;
 
                     if (mGridView.getAdapter() == null) {
-                        UserAdapter adapter = new UserAdapter(RecipientsActivity.this, mUsers);
+                        UserAdapter adapter = new UserAdapter(RecipientsActivity.this, mFriends);
                         mGridView.setAdapter(adapter);
                     } else {
-                        ((UserAdapter)mGridView.getAdapter()).refill(mUsers);
+                        ((UserAdapter)mGridView.getAdapter()).refill(mFriends);
                     }
 
                 } else {
@@ -248,7 +248,7 @@ public class RecipientsActivity extends AppCompatActivity {
         ArrayList<String> recipientIds = new ArrayList<>();
         for (int i = 0; i < mGridView.getCount(); i++) {
             if (mGridView.isItemChecked(i)) {
-                recipientIds.add(mUsers.get(i).getObjectId());
+                recipientIds.add(mFriends.get(i).getObjectId());
             }
         }
         return recipientIds;
