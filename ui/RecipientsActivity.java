@@ -25,7 +25,9 @@ import android.widget.Toast;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
@@ -132,6 +134,7 @@ public class RecipientsActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 if (e == null) {
                     Toast.makeText(RecipientsActivity.this, R.string.message_sent_success, Toast.LENGTH_LONG).show();
+                    sendPushNotifications();
                     finish(); //kills activity
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(RecipientsActivity.this);
@@ -143,6 +146,17 @@ public class RecipientsActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    protected void sendPushNotifications() {
+        ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+        query.whereContainedIn(ParseConstants.KEY_USER_ID, getRecipientIds());
+
+        //send push notification
+        ParsePush push = new ParsePush();
+        push.setQuery(query);
+        push.setMessage("You have a new PingPong message from " + ParseUser.getCurrentUser().getUsername());
+        push.sendInBackground();
     }
 
     @Override
